@@ -1,0 +1,49 @@
+
+
+;Project: Reformat
+;Author: Carlos Peris aka Zener
+;Date: April 2020
+;V1.0
+
+WBStartup
+
+If FromCLI
+    If NumPars = 2 ; needs 2 parameters
+        finput$ = Par$(1)
+        foutput$ = Par$(2)
+
+
+        err1.l = ReadFile(0, finput$)
+        err2.l = WriteFile(1, foutput$)
+        If err1 AND err2
+            NPrint "Processing "+finput$
+            FileInput 0
+            FileOutput 1
+            column = 0
+            While NOT Eof(0)
+                char$ = Inkey$(1);
+                If Asc(char$) = 10
+                    column = 0
+                EndIf
+                Print char$
+                column + 1
+                If column = 78
+                    column = 0
+                    Print Chr$(10)
+                EndIf
+            Wend
+        Else
+            If finput$ = foutput$ Then NPrint "Output file must be different"
+            If NOT err1 Then NPrint "Cannot open input file: " + finput$
+            If NOT err2 Then NPrint "Cannot open output file: " + foutput$
+        EndIf
+        CloseFile 1
+        CloseFile 2
+    Else
+        NPrint "Use Reformat <input file> <output file>"
+    EndIf
+EndIf
+
+End
+ 
+
