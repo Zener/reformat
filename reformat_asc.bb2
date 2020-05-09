@@ -12,25 +12,78 @@ If FromCLI
         finput$ = Par$(1)
         foutput$ = Par$(2)
 
-
+        size.l = Exists(finput$)
         err1.l = ReadFile(0, finput$)
         err2.l = WriteFile(1, foutput$)
         If err1 AND err2
+
+
             NPrint "Processing "+finput$
-            FileInput 0
+;            FileInput 0
+
+
+            memp.l = AllocMem(size, 1)
+            ReadMem 0, memp, size
             FileOutput 1
-            column = 0
-            While NOT Eof(0)
-                char$ = Inkey$(1);
-                If Asc(char$) = 10
+            pos.l = 0
+            column.w = 0
+            While pos < size AND column < size
+                lineStart.l = memp + pos
+
+                ;NPrint column," ",pos, " of ", size
+                ;forward
+                char.b = Peek.b(lineStart + column)
+                If char.b = 10
+                    lineEnd.l = lineStart + column
                     column = 0
-                EndIf
-                Print char$
-                column + 1
-                If column = 78
-                    column = 0
+                    For i.l = lineStart To lineEnd - 1
+                         char.b = Peek.b(i)
+                         Print Chr$(char)
+                         pos + 1
+                    Next
                     Print Chr$(10)
+                    pos + 1
+                Else
+                    column + 1
                 EndIf
+
+
+
+                If column = 78
+                    lineEnd.l = lineStart + 78
+                    char.b = Peek.b(lineEnd)
+                    If char.b <> 10 AND char.b <> 32
+                        ;backtracking
+                        tries = 0
+                        Repeat
+                            lineEnd - 1
+                            char.b = Peek.b(lineEnd)
+                            tries + 1
+                        Until char.b = 10 OR char.b = 32 OR tries = 20
+                    EndIf
+
+                     For i.l = lineStart To lineEnd - 1
+                         char.b = Peek.b(i)
+                         Print Chr$(char)
+                         pos + 1
+                     Next
+                     Print Chr$(10)
+                     pos + 1
+                     column = 0
+                EndIf
+
+
+                ;backtracking
+                ;char$ = Inkey$(1);
+                ;If Asc(char$) = 10
+                ;    column = 0
+                ;EndIf
+                ;Print char$
+                ;column + 1
+                ;If column = 78
+                ;    column = 0
+                ;    Print Chr$(10)
+                ;EndIf
             Wend
         Else
             If finput$ = foutput$ Then NPrint "Output file must be different"

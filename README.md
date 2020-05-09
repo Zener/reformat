@@ -2,7 +2,7 @@ Short: Adjusts text file line width to 78 chars
 Uploader: trackerhero@gmail.com
 Author: Zener
 Type: text/misc
-Version: 1.0
+Version: 1.1
 Architecture: m68k-amigaos
 Distribution: Aminet
 
